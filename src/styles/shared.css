@@ -93,10 +93,13 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  opacity: 1;
+  visibility: visible;
 }
 
 .btn-secondary-small:hover {
   background-color: #7f8c8d;
+  transform: scale(1.05);
 }
 
 .btn-success-small {
@@ -110,10 +113,13 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  opacity: 1;
+  visibility: visible;
 }
 
 .btn-success-small:hover {
   background-color: #229954;
+  transform: scale(1.05);
 }
 
 .btn-icon {
@@ -126,6 +132,8 @@
   justify-content: center;
   border-radius: 4px;
   transition: all 0.2s ease;
+  opacity: 1;
+  visibility: visible;
 }
 
 .btn-edit {
@@ -431,5 +439,138 @@
 
   .edit-actions button {
     flex: 1;
+  }
+}
+/* Estilos específicos para Check-ins */
+.checkin-card {
+  border-left-color: #9b59b6;
+}
+
+.checkin-card:hover {
+  border-left-color: #8e44ad;
+}
+
+.checkin-content {
+  margin-bottom: 10px;
+}
+
+.checkin-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.checkin-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #ecf0f1;
+  flex-shrink: 0;
+}
+
+.direction-icon-in {
+  color: #27ae60;
+}
+
+.direction-icon-out {
+  color: #e67e22;
+}
+
+.checkin-info {
+  flex: 1;
+}
+
+.checkin-location {
+  margin: 0 0 5px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.checkin-direction-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.checkin-direction-badge.in {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.checkin-direction-badge.out {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.checkin-edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.edit-field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.checkin-input-edit {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #3498db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.checkin-input-edit:focus {
+  outline: none;
+  border-color: #2980b9;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.checkin-input-edit select {
+  cursor: pointer;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .checkin-header {
+    gap: 10px;
+  }
+
+  .checkin-icon-badge {
+    width: 40px;
+    height: 40px;
+  }
+
+  .checkin-location {
+    font-size: 1rem;
   }
 }
