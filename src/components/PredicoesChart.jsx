@@ -109,7 +109,7 @@ const PredicoesChart = () => {
           </button>
         </div>
         <div className="dashboard-sync-info">
-          <span>Última atualização: {ultimaAtualizacao.toLocaleTimeString('pt-BR')}</span>
+          <span>Atualizado em: {ultimaAtualizacao.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
 
         {/* Filtros */}
