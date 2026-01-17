@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import '../styles/shared.css';
+import '../styles/dashboard-addon.css';
 
 const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 const TIMEZONE = 'America/Sao_Paulo';
@@ -94,35 +96,41 @@ const PredicoesChart = () => {
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-6 mt-4 px-2 flex justify-between items-end">
-          <div>
-            <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">📊 Predictions</h1>
-            <p className="text-[10px] text-gray-400 font-mono">ÚLTIMA SYNC: {ultimaAtualizacao.toLocaleTimeString()}</p>
-          </div>
-          {loading && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mb-1"></div>}
-        </header>
+      <div className="dashboard-container">
+        <div className="memorias-header">
+          <h1>📊 Predições</h1>
+          <button
+            className="btn-primary"
+            onClick={fetchPredicoes}
+            disabled={loading}
+          >
+            <span className={loading ? 'spinning' : ''}>🔄</span>
+            {loading ? 'Atualizando...' : 'Atualizar'}
+          </button>
+        </div>
+        <div className="dashboard-sync-info">
+          <span>Última atualização: {ultimaAtualizacao.toLocaleTimeString('pt-BR')}</span>
+        </div>
 
-        {/* Filtros Ajustados para Mobile */}
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6 border border-gray-200 mx-2">
-          <div className="flex flex-col gap-4">
-            <div className="w-full overflow-hidden">
-              <label className="block text-xs uppercase font-bold text-gray-400 mb-1.5 ml-1">Data da Consulta</label>
+        {/* Filtros */}
+        <div className="dashboard-filters-card">
+          <div className="dashboard-filters">
+            <div className="edit-field">
+              <label>Data da Consulta</label>
               <input 
                 type="date" 
                 value={data} 
                 onChange={(e) => setData(e.target.value)}
-                style={{ minWidth: '100%', WebkitAppearance: 'none' }}
-                className="w-full block px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-700 focus:bg-white focus:border-blue-400 transition-all" 
+                className="checkin-input-edit" 
               />
             </div>
             
-            <div className="w-full">
-              <label className="block text-xs uppercase font-bold text-gray-400 mb-1.5 ml-1">Modelo</label>
+            <div className="edit-field">
+              <label>Modelo</label>
               <select 
                 value={modelSelecionado} 
                 onChange={(e) => setModelSelecionado(e.target.value)}
-                className="w-full block px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-700 focus:bg-white focus:border-blue-400 transition-all"
+                className="checkin-input-edit"
               >
                 <option value="">Todos os modelos</option>
                 {[...new Set(predicoes.map(p => p.model_name))].map(m => (
@@ -130,25 +138,17 @@ const PredicoesChart = () => {
                 ))}
               </select>
             </div>
-
-            <button 
-              onClick={fetchPredicoes} 
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-md active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
-            >
-              {loading ? 'Carregando...' : 'Atualizar Dashboard'}
-            </button>
           </div>
         </div>
 
         {/* Gráfico com Live Pulsante */}
         {dadosGrafico.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-200 mx-2">
-            <div className="flex justify-between items-center mb-6 px-1">
-              <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Probabilidade (%)</h2>
-              <div className="flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
-                <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse-soft"></span>
-                <span className="text-[10px] font-extrabold text-blue-600 tracking-tight">LIVE MONITOR</span>
+          <div className="dashboard-chart-card">
+            <div className="dashboard-chart-header">
+              <h2>Probabilidade (%)</h2>
+              <div className="live-badge">
+                <span className="live-dot"></span>
+                <span>LIVE MONITOR</span>
               </div>
             </div>
 

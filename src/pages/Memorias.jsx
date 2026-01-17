@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Edit2, Plus, Search, X, Check } from 'lucide-react';
 import axios from 'axios';
-import '../styles/memorias.css';
+import '../styles/shared.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -208,7 +208,7 @@ export default function Memorias() {
                   />
                   <div className="edit-actions">
                     <button
-                      className="btn-icon btn-success-small"
+                      className="btn-success-small"
                       onClick={() => handleEditSave(memoria.id)}
                       disabled={submitting}
                       title="Salvar"
@@ -216,7 +216,7 @@ export default function Memorias() {
                       <Check size={18} />
                     </button>
                     <button
-                      className="btn-icon btn-secondary-small"
+                      className="btn-secondary-small"
                       onClick={handleEditCancel}
                       title="Cancelar"
                     >
