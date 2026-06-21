@@ -1,3 +1,35 @@
+:root {
+  /* marca */
+  --color-brand-50:  #EEF0FF;
+  --color-brand-100: #E0E3FE;
+  --color-brand-300: #A5ABF5;
+  --color-brand-500: #6366F1;
+  --color-brand-600: #4F46E5;
+  --color-brand-800: #3730A3;
+
+  /* status */
+  --color-success-50:  #E6FAF6;
+  --color-success-500: #14B8A6;
+  --color-success-700: #0F6E56;
+
+  --color-warning-50:  #FFF3EC;
+  --color-warning-500: #F97316;
+  --color-warning-700: #C2410C;
+
+  --color-danger-50:  #FEEDED;
+  --color-danger-500: #E24B4A;
+  --color-danger-700: #A32D2D;
+
+  /* neutros */
+  --color-text-primary:   #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-tertiary:  #94A3B8;
+
+  --color-bg-page:    #F1F5F9;
+  --color-bg-surface: #FFFFFF;
+  --color-border:     #E2E8F0;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
