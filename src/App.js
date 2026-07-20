@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Memorias from './pages/Memorias';
 import Documentos from './pages/Documentos';
 import Checkins from './pages/Checkins';
+import KidsBank from './pages/KidsBank';
 import './styles/layout.css';
 import './App.css';
 
@@ -18,6 +19,8 @@ function App() {
             <Route path="/memorias" element={<Memorias />} />
             <Route path="/documentos" element={<Documentos />} />
             <Route path="/checkins" element={<Checkins />} />
+            <Route path="/banco-dos-filhos" element={<KidsBank />} />
+            <Route path="/kids" element={<KidsBank />} />
           </Routes>
         </main>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, BarChart3, Brain, FileText, CheckCircle } from 'lucide-react';
+import { Menu, X, BarChart3, Brain, FileText, CheckCircle, PiggyBank } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/sidebar.css';
 
@@ -9,6 +9,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { path: '/', label: 'Dashboard', icon: BarChart3 },
+    { path: '/banco-dos-filhos', label: 'Cofre dos Filhos', icon: PiggyBank },
     { path: '/memorias', label: 'Memórias', icon: Brain },
     { path: '/documentos', label: 'Documentos', icon: FileText },
     { path: '/checkins', label: 'Check-ins', icon: CheckCircle },
