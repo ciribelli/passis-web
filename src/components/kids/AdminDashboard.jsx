@@ -13,7 +13,6 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
 
   const presets = [
     { title: '📖 Leu um Livro', amount: 50, category: 'Livros & Leitura', icon: '📚' },
-    { title: '🧹 Arrumou o Quarto', amount: 15, category: 'Tarefas Domésticas', icon: '🧹' },
     { title: '⭐ Tarefa Especial / Nota Boa', amount: 25, category: 'Estudos', icon: '⭐' },
     { title: '🎁 Mesada / Presente', amount: 100, category: 'Mesada', icon: '🎁' }
   ];
@@ -53,23 +52,23 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
   return (
     <div className="kb-admin-panel">
       {/* Header Admin */}
-      <div className="flex items-center justify-between pb-4 border-b border-amber-500/30 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-amber-500/30 mb-6 gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">
             <ShieldCheck size={24} />
           </div>
           <div>
-            <h2 className="font-extrabold text-2xl text-white font-['Outfit'] flex items-center gap-2">
-              Painel de Administrador
+            <h2 className="font-extrabold text-xl sm:text-2xl text-white font-['Outfit'] flex items-center gap-2 flex-wrap">
+              Painel do Pai
               <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-sans font-semibold">
                 Otávio
               </span>
             </h2>
-            <p className="text-xs text-slate-400">Depositar novos valores, tarefas e gerenciar o saldo dos filhos</p>
+            <p className="text-xs text-slate-400">Depositar recursos e gerenciar conta dos filhos</p>
           </div>
         </div>
 
-        <button onClick={onBack} className="kb-back-btn flex items-center gap-2">
+        <button onClick={onBack} className="kb-back-btn flex items-center justify-center gap-2 self-start sm:self-auto w-full sm:w-auto">
           <ArrowLeft size={16} />
           <span>Voltar para Pastas</span>
         </button>
@@ -77,7 +76,7 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
 
       {msgStatus && (
         <div className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 p-3 rounded-xl mb-4 flex items-center gap-2 text-sm font-semibold">
-          <CheckCircle size={18} /> {msgStatus}
+          <CheckCircle size={18} className="shrink-0" /> {msgStatus}
         </div>
       )}
 
@@ -90,7 +89,7 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
       {/* Seleção do Filho */}
       <div className="mb-6">
         <label className="kb-label">Selecionar Filho para Depositar:</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {kids.map((k) => (
             <button
               key={k.id}
@@ -98,15 +97,15 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
               onClick={() => setSelectedKidId(k.id)}
               className={`p-3.5 rounded-xl border flex items-center gap-3 transition font-bold ${
                 parseInt(selectedKidId) === k.id
-                  ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                  ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md shadow-amber-500/10'
                   : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800'
               }`}
             >
-              <User size={20} />
+              <User size={22} className="shrink-0" />
               <div className="text-left">
-                <div className="text-sm font-['Outfit']">{k.name}</div>
+                <div className="text-sm sm:text-base font-['Outfit']">{k.name}</div>
                 <div className="text-xs text-emerald-400 font-extrabold">
-                  Saldo: R$ {k.balance.toFixed(2)}
+                  Saldo Atual: R$ {k.balance.toFixed(2).replace('.', ',')}
                 </div>
               </div>
             </button>
@@ -125,16 +124,16 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
           >
             <div className="kb-preset-icon">{preset.icon}</div>
             <div className="kb-preset-title">{preset.title}</div>
-            <div className="kb-preset-val">+ R$ {preset.amount.toFixed(2)}</div>
+            <div className="kb-preset-val">+ R$ {preset.amount.toFixed(2).replace('.', ',')}</div>
           </div>
         ))}
       </div>
 
       {/* Formulário de Depósito */}
-      <form onSubmit={handleDepositSubmit} className="bg-slate-900/60 p-5 rounded-xl border border-slate-800 mb-8">
-        <h4 className="font-bold text-white mb-3 text-sm flex items-center gap-2">
-          <PlusCircle size={18} className="text-emerald-400" />
-          Depositar Recursos para {selectedKid?.name}
+      <form onSubmit={handleDepositSubmit} className="bg-slate-900/60 p-4 sm:p-5 rounded-xl border border-slate-800 mb-8">
+        <h4 className="font-bold text-white mb-4 text-sm flex items-center gap-2">
+          <PlusCircle size={18} className="text-emerald-400 shrink-0" />
+          Novo Depósito para {selectedKid?.name}
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -175,9 +174,9 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
 
         <button
           type="submit"
-          className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-amber-500/20 transition text-base mt-2"
+          className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-amber-500/20 transition text-sm sm:text-base mt-2"
         >
-          ➕ Depositar R$ {amount ? parseFloat(amount || 0).toFixed(2) : '0,00'} para {selectedKid?.name}
+          ➕ Depositar R$ {amount ? parseFloat(amount || 0).toFixed(2).replace('.', ',') : '0,00'} para {selectedKid?.name}
         </button>
       </form>
 
@@ -187,28 +186,35 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
           Últimas movimentações de {selectedKid?.name}:
         </h4>
 
-        <div className="space-y-2 max-h-60 overflow-y-auto">
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
           {currentHistory.transactions && currentHistory.transactions.length > 0 ? (
             currentHistory.transactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between p-3 bg-slate-900/40 rounded-lg border border-slate-800 text-xs">
-                <div>
-                  <span className={`font-bold mr-2 ${tx.type === 'deposit' ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {tx.type === 'deposit' ? '+ R$' : '- R$'} {tx.amount.toFixed(2)}
-                  </span>
-                  <span className="text-white font-medium">{tx.description}</span>
-                  <span className="text-slate-500 ml-2">({tx.timestamp})</span>
+              <div key={tx.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`font-extrabold text-sm ${tx.type === 'deposit' ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {tx.type === 'deposit' ? '+ R$' : '- R$'} {tx.amount.toFixed(2).replace('.', ',')}
+                    </span>
+                    <span className="text-white font-semibold truncate">{tx.description}</span>
+                  </div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">
+                    {tx.timestamp} • <span className="text-slate-300">{tx.category}</span>
+                  </div>
                 </div>
                 <button
                   onClick={() => onDeleteTransaction(tx.id)}
-                  className="p-1 text-slate-500 hover:text-red-400 transition"
+                  className="self-end sm:self-center p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition flex items-center gap-1 text-[11px]"
                   title="Apagar transação"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={15} />
+                  <span className="sm:hidden font-semibold">Excluir</span>
                 </button>
               </div>
             ))
           ) : (
-            <div className="text-xs text-slate-500 italic p-3">Sem histórico recente.</div>
+            <div className="text-xs text-slate-500 italic p-3 text-center bg-slate-900/30 rounded-xl">
+              Nenhuma movimentação recente registrada.
+            </div>
           )}
         </div>
       </div>

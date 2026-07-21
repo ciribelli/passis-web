@@ -57,6 +57,10 @@ const KidsBank = () => {
 
   useEffect(() => {
     fetchKids();
+    document.body.classList.add('kids-bank-active');
+    return () => {
+      document.body.classList.remove('kids-bank-active');
+    };
   }, []);
 
   // Seleção de Pasta
