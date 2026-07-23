@@ -1,0 +1,257 @@
+.login-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at top right, #EEF0FF, #F1F5F9);
+  padding: 20px;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.login-header h1 {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.login-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 35px;
+}
+
+/* Perfis */
+.profiles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profile-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 16px 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.profile-select-btn:hover {
+  transform: translateY(-2px);
+  border-color: #6366f1;
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.06);
+}
+
+.profile-avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  background-size: cover;
+  background-position: center;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #1e293b;
+}
+
+.profile-role {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+/* Modal / Teclado PIN */
+.pin-entry-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.back-btn-container {
+  align-self: flex-start;
+  margin-bottom: 15px;
+}
+
+.btn-back-to-profiles {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  transition: opacity 0.2s;
+}
+
+.btn-back-to-profiles:hover {
+  opacity: 0.8;
+}
+
+.selected-profile-header {
+  margin-bottom: 25px;
+}
+
+.selected-profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  background-size: cover;
+  background-position: center;
+}
+
+.selected-profile-header h2 {
+  font-size: 1.4rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.selected-profile-header p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Input do PIN */
+.pin-dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.pin-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  transition: all 0.15s ease;
+}
+
+.pin-dot.filled {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  transform: scale(1.15);
+}
+
+.pin-error-text {
+  color: #e24b4a;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+  min-height: 18px;
+}
+
+/* Teclado */
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.keypad-btn {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.keypad-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: scale(1.05);
+}
+
+.keypad-btn:active {
+  background: #f1f5f9;
+  transform: scale(0.95);
+}
+
+.keypad-btn.action-btn {
+  font-size: 0.95rem;
+  color: #64748b;
+  border: none;
+  background: transparent;
+}
+
+.keypad-btn.action-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.keypad-btn.action-btn.delete-btn:hover {
+  background: #feeded;
+  color: #e24b4a;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

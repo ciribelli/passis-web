@@ -7,6 +7,7 @@
   background-color: #0f172a; /* Slate 900 - Premium Dark Slate background */
   color: #e2e8f0;
   padding-top: 60px;
+  padding-bottom: 120px;
   overflow-y: auto;
   transition: transform 0.3s ease-in-out;
   z-index: 98;
@@ -108,3 +109,58 @@
     left: 10px;
   }
 }
+
+/* Sidebar Footer & Logout */
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  border-top: 2px solid #1e293b;
+  background-color: #0f172a;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.user-greeting {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e24b4a;
+  border-color: #e24b4a;
+  color: #ffffff;
+}
+
+.sidebar.closed .sidebar-footer {
+  display: none;
+}
+

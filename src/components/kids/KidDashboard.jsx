@@ -53,10 +53,12 @@ const KidDashboard = ({ kid, historyData, onBack, onWithdraw }) => {
           </div>
         </div>
 
-        <button onClick={onBack} className="kb-back-btn flex items-center gap-2">
-          <LogOut size={16} />
-          <span>Trocar Pasta</span>
-        </button>
+        {onBack && (
+          <button onClick={onBack} className="kb-back-btn flex items-center gap-2">
+            <LogOut size={16} />
+            <span>Trocar Pasta</span>
+          </button>
+        )}
       </div>
 
       {/* Hero Saldo Principal */}

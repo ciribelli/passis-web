@@ -28,6 +28,23 @@ const KidsBank = () => {
   const [historyMap, setHistoryMap] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // Sessão do usuário
+  const savedAuth = localStorage.getItem('passis_auth');
+  const session = savedAuth ? JSON.parse(savedAuth) : null;
+  const isAdmin = session?.role === 'admin';
+
+  // Verifica login automático para filhos
+  const checkAutoLogin = (loadedKids) => {
+    if (session && session.role === 'kid') {
+      const kid = loadedKids.find(k => k.id === session.kidId);
+      if (kid) {
+        setCurrentKid({ ...kid, passcode: session.pin });
+        setViewState('kid_dashboard');
+        fetchKidHistory(kid.id);
+      }
+    }
+  };
+
   // Carrega lista de crianças da API
   const fetchKids = async () => {
     try {
@@ -35,9 +52,13 @@ const KidsBank = () => {
       const res = await axios.get(`${API_BASE_URL}/v1/kids`);
       if (res.data && res.data.kids) {
         setKids(res.data.kids);
+        checkAutoLogin(res.data.kids);
+      } else {
+        checkAutoLogin(DEFAULT_KIDS);
       }
     } catch (err) {
       console.warn('Backend Flask indisponível, usando estado local:', err);
+      checkAutoLogin(DEFAULT_KIDS);
     } finally {
       setLoading(false);
     }
@@ -178,7 +199,7 @@ const KidsBank = () => {
           </div>
         </div>
 
-        {viewState !== 'admin' && (
+        {viewState !== 'admin' && isAdmin && (
           <button onClick={handleOpenAdminTrigger} className="kb-admin-btn">
             👑 Área do Pai
           </button>
@@ -198,7 +219,7 @@ const KidsBank = () => {
         <KidDashboard
           kid={currentKid}
           historyData={historyMap[currentKid.id]}
-          onBack={() => setViewState('folders')}
+          onBack={isAdmin ? () => setViewState('folders') : null}
           onWithdraw={handleWithdraw}
         />
       )}
