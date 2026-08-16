@@ -33,16 +33,22 @@ const AdminDashboard = ({ kids, onBack, onDeposit, onDeleteTransaction, historyM
     }
   }, [selectedKid?.id]);
 
+  const prevAdminCountRef = useRef(0);
+
   useEffect(() => {
+    prevAdminCountRef.current = 0;
     fetchAdminMessages();
     const interval = setInterval(fetchAdminMessages, 4000);
     return () => clearInterval(interval);
   }, [fetchAdminMessages]);
 
-
   useEffect(() => {
-    adminMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (adminMessages.length > prevAdminCountRef.current) {
+      adminMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    prevAdminCountRef.current = adminMessages.length;
   }, [adminMessages]);
+
 
   const handleAdminReplySubmit = async (e) => {
     e.preventDefault();

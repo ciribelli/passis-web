@@ -45,6 +45,8 @@ const KidChatModal = ({ isOpen, onClose, kid }) => {
 
   const isMaria = kid?.name?.toLowerCase().includes('maria');
 
+  const prevMsgCountRef = useRef(0);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -64,7 +66,11 @@ const KidChatModal = ({ isOpen, onClose, kid }) => {
   useEffect(() => {
     if (isOpen && kid?.id) {
       setLoading(true);
-      fetchMessages().finally(() => setLoading(false));
+      prevMsgCountRef.current = 0;
+      fetchMessages().finally(() => {
+        setLoading(false);
+        setTimeout(scrollToBottom, 150);
+      });
 
       // Polling a cada 3.5s para receber respostas do Pai em tempo real
       const interval = setInterval(fetchMessages, 3500);
@@ -72,10 +78,13 @@ const KidChatModal = ({ isOpen, onClose, kid }) => {
     }
   }, [isOpen, kid?.id, fetchMessages]);
 
-
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > prevMsgCountRef.current) {
+      scrollToBottom();
+    }
+    prevMsgCountRef.current = messages.length;
   }, [messages]);
+
 
   const handleSendMessage = async (textToSend, actionType = 'custom') => {
     const text = textToSend || inputText;
