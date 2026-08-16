@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { ArrowLeft, BookOpen, Calculator, Coins, Gift, History, LogOut, MinusCircle, PlusCircle, ShoppingBag, Sparkles, Trophy } from 'lucide-react';
+import { Calculator, Coins, History, LogOut, MinusCircle, PlusCircle, Sparkles, MessageSquare } from 'lucide-react';
+import KidChatModal from './KidChatModal';
+
 
 const KidDashboard = ({ kid, historyData, onBack, onWithdraw }) => {
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
 
   const isMaria = kid.name.toLowerCase().includes('maria');
   const avatarCropClass = isMaria ? 'maria-crop' : 'jose-crop';
@@ -81,8 +85,17 @@ const KidDashboard = ({ kid, historyData, onBack, onWithdraw }) => {
             <Coins size={22} />
             <span>Sacar Dinheiro</span>
           </button>
+
+          <button 
+            onClick={() => setIsChatOpen(true)}
+            className="kb-btn-chat"
+          >
+            <MessageSquare size={22} />
+            <span>Falar com o Papai</span>
+          </button>
         </div>
       </div>
+
 
       {/* Seção Educativa: Como Cheguei Nesse Dinheiro */}
       <div className="kb-story-section">
@@ -226,8 +239,16 @@ const KidDashboard = ({ kid, historyData, onBack, onWithdraw }) => {
           </div>
         </div>
       )}
+
+      {/* Modal de Chat Conversacional com o Pai */}
+      <KidChatModal
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        kid={kid}
+      />
     </div>
   );
 };
+
 
 export default KidDashboard;
