@@ -240,7 +240,7 @@ const KidsBank = () => {
         onClose={() => setIsPinModalOpen(false)}
         onSubmit={handlePinSubmit}
         title={isAdminAuthPending ? "Acesso de Administrador" : `Contrasenha - ${targetKidForPin?.name}`}
-        subtitle={isAdminAuthPending ? "Digite a senha de 4 dígitos do Pai (padrão: 8888)" : "Digite seu PIN de 4 dígitos para abrir sua pasta (padrão: 1234)"}
+        subtitle={isAdminAuthPending ? "Digite a senha de 4 dígitos do Pai" : "Digite seu PIN de 4 dígitos para abrir sua pasta"}
       />
     </div>
   );
