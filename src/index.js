@@ -5,9 +5,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-if (process.env.REACT_APP_PASSIS_API_KEY) {
-  axios.defaults.headers.common['X-API-Key'] = process.env.REACT_APP_PASSIS_API_KEY;
-}
+axios.interceptors.request.use((config) => {
+  const apiKey = process.env.REACT_APP_PASSIS_API_KEY || process.env.PASSIS_API_KEY || localStorage.getItem('passis_api_key');
+  if (apiKey) {
+    config.headers['X-API-Key'] = apiKey;
+  }
+  return config;
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
