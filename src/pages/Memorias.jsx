@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, Edit2, Plus, Search, X, Check, Clock, Bell } from 'lucide-react';
+import { Trash2, Edit2, Plus, Search, X, Check, Clock, Bell, Archive, AlarmClock, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 import '../styles/shared.css';
 
@@ -25,6 +25,7 @@ export default function Memorias() {
   const [editIsReminder, setEditIsReminder] = useState(false);
   const [editReminderTime, setEditReminderTime] = useState('');
   const [editReminderStatus, setEditReminderStatus] = useState('pendente');
+  const [quickActionLoading, setQuickActionLoading] = useState(null);
 
   // Carregar memórias
   useEffect(() => {
@@ -144,15 +145,47 @@ export default function Memorias() {
     setEditingContent('');
   };
 
+  // Ações rápidas no card do lembrete (sem entrar em edição)
+  const handleQuickStatusChange = async (id, newStatus, extraFields = {}) => {
+    try {
+      setQuickActionLoading(id);
+      const payload = { reminder_status: newStatus, ...extraFields };
+      await axios.put(`${API_BASE_URL}/memorias/${id}`, payload);
+      await fetchMemorias();
+    } catch (err) {
+      setError('Erro ao atualizar lembrete');
+      console.error(err);
+    } finally {
+      setQuickActionLoading(null);
+    }
+  };
+
+  const handleSnooze = async (id) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 15);
+    const snoozedTime = now.toISOString().slice(0, 19).replace('T', ' ');
+    await handleQuickStatusChange(id, 'pendente', { reminder_time: snoozedTime });
+  };
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      pendente: '⏳ Pendente',
+      enviado: '📤 Enviado',
+      concluido: '✅ Concluído',
+      arquivado: '📋 Arquivado'
+    };
+    return labels[status] || status;
+  };
+
   // Filtrar memórias baseada no termo de busca e na aba ativa
   const filteredMemorias = memorias.filter(memoria => {
     const matchesSearch = memoria.content.toLowerCase().includes(searchTerm.toLowerCase());
     if (!matchesSearch) return false;
 
     if (activeTab === 'memorias') {
-      return !memoria.reminder_time;
+      return !memoria.reminder_time && !memoria.reminder_status;
     } else if (activeTab === 'lembretes') {
-      return !!memoria.reminder_time;
+      return !!memoria.reminder_time || !!memoria.reminder_status;
     }
     return true;
   });
@@ -305,7 +338,7 @@ export default function Memorias() {
             {filteredMemorias.length} {activeTab === 'lembretes' ? 'lembrete(s)' : activeTab === 'memorias' ? 'memória(s)' : 'item(ns)'}
           </div>
           {filteredMemorias.map((memoria) => (
-            <div key={memoria.id} className={`memoria-card ${memoria.reminder_time ? 'lembrete-card' : ''}`}>
+            <div key={memoria.id} className={`memoria-card ${memoria.reminder_time ? 'lembrete-card' : ''} ${memoria.reminder_status === 'concluido' ? 'lembrete-concluido' : ''} ${memoria.reminder_status === 'arquivado' ? 'lembrete-arquivado' : ''}`}>
               {editingId === memoria.id ? (
                 // Modo edição
                 <div className="memoria-edit-mode">
@@ -346,10 +379,12 @@ export default function Memorias() {
                             <select
                               value={editReminderStatus}
                               onChange={(e) => setEditReminderStatus(e.target.value)}
-                              style={{ padding: '6px', borderRadius: '4px', border: '1px solid #bdc3c7', fontSize: '0.85rem', color: '#2c3e50', background: 'white' }}
+                              className="edit-status-select"
                             >
-                              <option value="pendente">Pendente</option>
-                              <option value="enviado">Enviado</option>
+                              <option value="pendente">⏳ Pendente</option>
+                              <option value="enviado">📤 Enviado</option>
+                              <option value="concluido">✅ Concluído</option>
+                              <option value="arquivado">📋 Arquivado</option>
                             </select>
                           </div>
                         )}
@@ -383,14 +418,49 @@ export default function Memorias() {
 
                     {/* Exibição específica para lembretes */}
                     {memoria.reminder_time && (
-                      <div className="reminder-info">
-                        <Bell size={16} />
-                        <span>
-                          Alarme: <strong>{formatDate(memoria.reminder_time)}</strong>
-                        </span>
-                        <span className={`status-badge status-${memoria.reminder_status}`}>
-                          {memoria.reminder_status === 'enviado' ? 'Enviado' : 'Pendente'}
-                        </span>
+                      <div className="reminder-section">
+                        <div className="reminder-info">
+                          <Bell size={16} />
+                          <span>
+                            Alarme: <strong>{formatDate(memoria.reminder_time)}</strong>
+                          </span>
+                          <span className={`status-badge status-${memoria.reminder_status}`}>
+                            {getStatusLabel(memoria.reminder_status)}
+                          </span>
+                        </div>
+
+                        {/* Botões de ação rápida — visíveis apenas para status pendente/enviado */}
+                        {(memoria.reminder_status === 'pendente' || memoria.reminder_status === 'enviado') && (
+                          <div className="reminder-quick-actions">
+                            <button
+                              className="quick-btn quick-btn-done"
+                              onClick={() => handleQuickStatusChange(memoria.id, 'concluido')}
+                              disabled={quickActionLoading === memoria.id}
+                              title="Marcar como concluído"
+                            >
+                              <CheckCircle size={15} />
+                              Concluir
+                            </button>
+                            <button
+                              className="quick-btn quick-btn-snooze"
+                              onClick={() => handleSnooze(memoria.id)}
+                              disabled={quickActionLoading === memoria.id}
+                              title="Adiar 15 minutos"
+                            >
+                              <AlarmClock size={15} />
+                              Soneca
+                            </button>
+                            <button
+                              className="quick-btn quick-btn-archive"
+                              onClick={() => handleQuickStatusChange(memoria.id, 'arquivado')}
+                              disabled={quickActionLoading === memoria.id}
+                              title="Arquivar lembrete"
+                            >
+                              <Archive size={15} />
+                              Arquivar
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

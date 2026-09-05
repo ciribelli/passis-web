@@ -755,9 +755,128 @@
 }
 
 .status-enviado {
+  background-color: #cce5ff;
+  color: #004085;
+  border: 1px solid #b8daff;
+}
+
+.status-concluido {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-arquivado {
   background-color: #e2e3e5;
   color: #383d41;
   border: 1px solid #d6d8db;
+}
+
+/* Card visual diferenciado para lembretes concluídos */
+.lembrete-card.lembrete-concluido {
+  background: #f0faf2;
+  border-left-color: #27ae60;
+  opacity: 0.85;
+}
+
+.lembrete-card.lembrete-concluido .memoria-content p {
+  text-decoration: line-through;
+  color: #7f8c8d;
+}
+
+/* Card visual diferenciado para lembretes arquivados */
+.lembrete-card.lembrete-arquivado {
+  background: #f5f5f5;
+  border-left-color: #95a5a6;
+  opacity: 0.7;
+}
+
+/* Seção do lembrete (info + botões) */
+.reminder-section {
+  margin-top: 8px;
+}
+
+/* Botões de ação rápida */
+.reminder-quick-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quick-btn-done {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.quick-btn-done:hover:not(:disabled) {
+  background-color: #27ae60;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.quick-btn-snooze {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.quick-btn-snooze:hover:not(:disabled) {
+  background-color: #e67e22;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
+}
+
+.quick-btn-archive {
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.quick-btn-archive:hover:not(:disabled) {
+  background-color: #6c757d;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+/* Dropdown de status estilizado no modo edição */
+.edit-status-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #bdc3c7;
+  font-size: 0.85rem;
+  color: #2c3e50;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.edit-status-select:focus {
+  border-color: #e67e22;
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
 }
 
 /* Informações do Lembrete (Data/Hora de Disparo) */
