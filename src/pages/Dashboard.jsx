@@ -12,6 +12,10 @@ export default function Dashboard() {
   const {
     loading,
     error,
+    weekOffset,
+    weekLabel,
+    goToPreviousWeek,
+    goToNextWeek,
     weekDays,
     selectedDay,
     setSelectedDay,
@@ -70,6 +74,10 @@ export default function Dashboard() {
         selectedDay={selectedDay}
         onSelectDay={setSelectedDay}
         arcsByDay={arcsByDay}
+        weekLabel={weekLabel}
+        goToPreviousWeek={goToPreviousWeek}
+        goToNextWeek={goToNextWeek}
+        canGoNext={weekOffset < 0}
       />
 
       {/* Timeline Detalhada do Dia Selecionado */}

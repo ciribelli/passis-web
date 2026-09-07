@@ -7,7 +7,10 @@ export default function DayTimeline({ selectedDay, checkins }) {
         day: 'numeric',
         month: 'long'
       })
-    : '';
+  // Ordenar eventos em ordem decrescente (mais recente no topo)
+  const sortedCheckins = [...(checkins || [])].sort(
+    (a, b) => new Date(b.data) - new Date(a.data)
+  );
 
   return (
     <div className="day-timeline-card">
@@ -16,17 +19,17 @@ export default function DayTimeline({ selectedDay, checkins }) {
           Timeline do Dia — <span style={{ textTransform: 'capitalize' }}>{formattedDate}</span>
         </h3>
         <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>
-          {checkins.length} {checkins.length === 1 ? 'check-in' : 'check-ins'}
+          {sortedCheckins.length} {sortedCheckins.length === 1 ? 'check-in' : 'check-ins'}
         </span>
       </div>
 
-      {checkins.length === 0 ? (
+      {sortedCheckins.length === 0 ? (
         <div style={{ padding: '20px 0', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>
           Nenhum check-in registrado neste dia.
         </div>
       ) : (
         <div className="day-timeline-list">
-          {checkins.map((item) => {
+          {sortedCheckins.map((item) => {
             const time = item.data ? item.data.split(' ')[1].slice(0, 5) : '--:--';
             const isDirIn = item.direction === 'in';
 

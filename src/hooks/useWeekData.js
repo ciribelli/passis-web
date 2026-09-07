@@ -38,6 +38,7 @@ function parseDecimalHour(dateStr) {
 export function useWeekData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = Semana Atual, -1 = Anterior, etc.
   const [weekDays, setWeekDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState(formatDateKey(new Date()));
   const [allCheckins, setAllCheckins] = useState([]);
@@ -45,33 +46,43 @@ export function useWeekData() {
   const [arcsByDay, setArcsByDay] = useState({});
   const [overallScore, setOverallScore] = useState(0);
   const [contextSentence, setContextSentence] = useState('');
+  const [weekLabel, setWeekLabel] = useState('Semana Atual');
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [weekOffset]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Calcular intervalo: 5 semanas atrás até hoje
+      // Hoje e Domingo Atual
       const today = new Date();
       const currentSunday = getSunday(today);
-      const startSunday = new Date(currentSunday);
-      startSunday.setDate(startSunday.getDate() - 28); // 4 semanas atrás
+
+      // Domingo da semana visualizada (offset * 7 dias)
+      const viewSunday = new Date(currentSunday);
+      viewSunday.setDate(viewSunday.getDate() + (weekOffset * 7));
+
+      // Sábado da semana visualizada
+      const viewSaturday = new Date(viewSunday);
+      viewSaturday.setDate(viewSaturday.getDate() + 6);
+
+      // Buscar histórico estendido (8 semanas atrás do viewSunday para médias precisas)
+      const startSunday = new Date(viewSunday);
+      startSunday.setDate(startSunday.getDate() - 28);
 
       const startStr = formatDateKey(startSunday);
-      const endStr = formatDateKey(today);
 
       const response = await axios.get(`${API_BASE_URL}/checkin`, {
-        params: { start_date: startStr, limit: 400 }
+        params: { start_date: startStr, limit: 500 }
       });
 
       const checkins = response.data.checkins || [];
       setAllCheckins(checkins);
 
-      // 1. Gerar os 7 dias da semana atual (Domingo a Sábado)
+      // 1. Gerar os 7 dias da semana visualizada (Domingo a Sábado)
       const days = [];
       const dayLabels = [
         { initial: 'S', short: 'Dom' },
@@ -84,7 +95,7 @@ export function useWeekData() {
       ];
 
       for (let i = 0; i < 7; i++) {
-        const d = new Date(currentSunday);
+        const d = new Date(viewSunday);
         d.setDate(d.getDate() + i);
         const dateKey = formatDateKey(d);
         const isToday = dateKey === formatDateKey(today);
@@ -100,6 +111,28 @@ export function useWeekData() {
       }
       setWeekDays(days);
 
+      // Garantir que a data selecionada pertence a essa semana se a anterior não pertence
+      const dayKeys = new Set(days.map(d => d.dateKey));
+      if (!dayKeys.has(selectedDay)) {
+        // Se a semana contém hoje, seleciona hoje. Senão, seleciona o primeiro dia (Domingo)
+        if (dayKeys.has(formatDateKey(today))) {
+          setSelectedDay(formatDateKey(today));
+        } else {
+          setSelectedDay(days[0].dateKey);
+        }
+      }
+
+      // Rótulo da semana
+      if (weekOffset === 0) {
+        setWeekLabel('Semana Atual');
+      } else if (weekOffset === -1) {
+        setWeekLabel('Semana Anterior');
+      } else {
+        const fmtStart = `${viewSunday.getDate()}/${viewSunday.getMonth() + 1}`;
+        const fmtEnd = `${viewSaturday.getDate()}/${viewSaturday.getMonth() + 1}`;
+        setWeekLabel(`${fmtStart} - ${fmtEnd}`);
+      }
+
       // 2. Agrupar checkins por data 'YYYY-MM-DD'
       const checkinsByDate = {};
       checkins.forEach(c => {
@@ -112,31 +145,27 @@ export function useWeekData() {
       const arcs = {};
       days.forEach(dayObj => {
         const dayCheckins = checkinsByDate[dayObj.dateKey] || [];
-        // Ordenar por horário
         dayCheckins.sort((a, b) => new Date(a.data) - new Date(b.data));
 
         const dayArcs = [];
 
-        // Identificar pares e pontos soltos
         for (let i = 0; i < dayCheckins.length; i++) {
           const item = dayCheckins[i];
           const itemHour = parseDecimalHour(item.data);
           const name = item.checkin.toLowerCase();
           const dir = item.direction ? item.direction.toLowerCase() : '';
 
-          // Definir categoria e cor
           let category = 'routine';
-          let color = '#10B981'; // Verde padrão para rotinas (terço, academia)
+          let color = '#10B981';
 
           if (name.includes('awake')) {
             category = 'sleep';
-            color = '#3B82F6'; // Azul para sono
+            color = '#3B82F6';
           } else if (name.includes('casa') || name.includes('edisen') || name.includes('edihb') || name.includes('cenpes') || name.includes('drive')) {
             category = 'commute';
-            color = '#F97316'; // Laranja para casa / deslocamento / trabalho
+            color = '#F97316';
           }
 
-          // Procurar o par de saída ou entrada correspondente nas proximidades
           let paired = false;
           if (dir === 'out' || dir === 'in') {
             for (let j = i + 1; j < dayCheckins.length; j++) {
@@ -173,7 +202,7 @@ export function useWeekData() {
               color,
               name: item.checkin,
               startHour: itemHour,
-              endHour: itemHour + 0.3, // Ponto sutil
+              endHour: itemHour + 0.3,
               startTime: item.data.split(' ')[1].slice(0, 5),
               paired: false
             });
@@ -184,13 +213,12 @@ export function useWeekData() {
       });
       setArcsByDay(arcs);
 
-      // 4. Calcular Metas Relativas (Médias das 4 semanas anteriores vs Semana Atual)
+      // 4. Calcular Metas Relativas
       const currentWeekKeys = new Set(days.map(d => d.dateKey));
 
       let currentAcademia = 0;
       let currentTerco = 0;
 
-      // Contagem semana atual
       days.forEach(d => {
         const list = checkinsByDate[d.dateKey] || [];
         list.forEach(c => {
@@ -200,7 +228,6 @@ export function useWeekData() {
         });
       });
 
-      // Contagem históricas (últimas 4 semanas)
       let pastAcademiaCount = 0;
       let pastTercoCount = 0;
 
@@ -215,11 +242,9 @@ export function useWeekData() {
         }
       });
 
-      // Médias semanais das 4 semanas passadas
       const avgAcademia = Math.max(1, Math.round(pastAcademiaCount / 4));
       const avgTerco = Math.max(1, Math.round(pastTercoCount / 4));
 
-      // Ratios para o Score Geral
       const ratioAcademia = Math.min(currentAcademia / avgAcademia, 1.2);
       const ratioTerco = Math.min(currentTerco / avgTerco, 1.2);
 
@@ -278,11 +303,18 @@ export function useWeekData() {
     }
   };
 
+  const goToPreviousWeek = () => setWeekOffset(prev => prev - 1);
+  const goToNextWeek = () => setWeekOffset(prev => Math.min(0, prev + 1));
+
   const selectedDayCheckins = allCheckins.filter(c => c.data && c.data.startsWith(selectedDay));
 
   return {
     loading,
     error,
+    weekOffset,
+    weekLabel,
+    goToPreviousWeek,
+    goToNextWeek,
     weekDays,
     selectedDay,
     setSelectedDay,
