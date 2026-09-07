@@ -159,7 +159,8 @@ export default function WeekGrid({
                                 top: `${y1}px`, 
                                 width: '10px', 
                                 height: '10px', 
-                                backgroundColor: arc.color, 
+                                backgroundColor: arc.startDir === 'out' ? '#FFF' : arc.color, 
+                                border: arc.startDir === 'out' ? `2px solid ${arc.color}` : 'none', 
                                 borderRadius: '50%', 
                                 transform: 'translate(-50%, -50%)',
                                 zIndex: 5
@@ -173,8 +174,8 @@ export default function WeekGrid({
                                   top: `${y2}px`, 
                                   width: '10px', 
                                   height: '10px', 
-                                  backgroundColor: '#FFF', 
-                                  border: `2px solid ${arc.color}`, 
+                                  backgroundColor: arc.endDir === 'in' ? arc.color : '#FFF', 
+                                  border: arc.endDir === 'in' ? 'none' : `2px solid ${arc.color}`, 
                                   borderRadius: '50%', 
                                   transform: 'translate(-50%, -50%)',
                                   zIndex: 5

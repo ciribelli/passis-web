@@ -150,6 +150,13 @@ export function useWeekData() {
         const dayArcs = [];
         const pairedIds = new Set();
 
+        const getCategory = (checkinName) => {
+          const n = checkinName.toLowerCase();
+          if (n.includes('awake')) return 'sleep';
+          if (n.includes('casa') || n.includes('edisen') || n.includes('edihb') || n.includes('cenpes') || n.includes('drive')) return 'commute';
+          return 'routine';
+        };
+
         for (let i = 0; i < dayCheckins.length; i++) {
           const item = dayCheckins[i];
           if (pairedIds.has(item.id)) continue;
@@ -157,49 +164,54 @@ export function useWeekData() {
           const itemHour = parseDecimalHour(item.data);
           const name = item.checkin.toLowerCase();
           const dir = item.direction ? item.direction.toLowerCase() : '';
-
-          let category = 'routine';
-          let color = '#10B981';
-
-          if (name.includes('awake')) {
-            category = 'sleep';
-            color = '#3B82F6';
-          } else if (name.includes('casa') || name.includes('edisen') || name.includes('edihb') || name.includes('cenpes') || name.includes('drive')) {
-            category = 'commute';
-            color = '#F97316';
-          }
+          const category = getCategory(name);
+          const color = category === 'sleep' ? '#3B82F6' : category === 'commute' ? '#F97316' : '#10B981';
 
           let paired = false;
-          // Parear Entrada (IN) -> Saída (OUT)
-          if (dir === 'in') {
-            for (let j = i + 1; j < dayCheckins.length; j++) {
-              const nextItem = dayCheckins[j];
-              if (pairedIds.has(nextItem.id)) continue;
 
-              const nextName = nextItem.checkin.toLowerCase();
-              const nextDir = nextItem.direction ? nextItem.direction.toLowerCase() : '';
+          // Procurar o par correto no mesmo dia
+          for (let j = i + 1; j < dayCheckins.length; j++) {
+            const nextItem = dayCheckins[j];
+            if (pairedIds.has(nextItem.id)) continue;
 
-              if (nextDir === 'out' && (nextName === name || category === 'commute' || category === 'sleep' || category === 'routine')) {
-                const nextHour = parseDecimalHour(nextItem.data);
-                const diffHours = (new Date(nextItem.data) - new Date(item.data)) / (1000 * 60 * 60);
+            const nextName = nextItem.checkin.toLowerCase();
+            const nextDir = nextItem.direction ? nextItem.direction.toLowerCase() : '';
+            const nextCategory = getCategory(nextName);
 
-                dayArcs.push({
-                  id: `arc-${item.id}-${nextItem.id}`,
-                  category,
-                  color,
-                  name: item.checkin,
-                  startHour: itemHour,
-                  endHour: nextHour,
-                  startTime: item.data.split(' ')[1].slice(0, 5),
-                  endTime: nextItem.data.split(' ')[1].slice(0, 5),
-                  durationHours: diffHours.toFixed(1),
-                  paired: true
-                });
-                pairedIds.add(item.id);
-                pairedIds.add(nextItem.id);
-                paired = true;
-                break;
-              }
+            // Regra 1: Mesmo nome e direções opostas (ex: awake IN -> awake OUT, terco IN -> terco OUT)
+            const isSameNamePair = (name === nextName) && (dir !== nextDir);
+
+            // Regra 2: Categoria de deslocamento (ex: casa OUT -> EDISEN IN ou casa IN)
+            const isCommutePair = (category === 'commute' && nextCategory === 'commute') && (dir !== nextDir);
+
+            if (isSameNamePair || isCommutePair) {
+              const nextHour = parseDecimalHour(nextItem.data);
+              const diffHours = (new Date(nextItem.data) - new Date(item.data)) / (1000 * 60 * 60);
+
+              const startH = Math.min(itemHour, nextHour);
+              const endH = Math.max(itemHour, nextHour);
+              const startDir = itemHour <= nextHour ? dir : nextDir;
+              const endDir = itemHour <= nextHour ? nextDir : dir;
+
+              dayArcs.push({
+                id: `arc-${item.id}-${nextItem.id}`,
+                category,
+                color,
+                name: item.checkin,
+                startHour: startH,
+                endHour: endH,
+                startDir,
+                endDir,
+                startTime: (itemHour <= nextHour ? item : nextItem).data.split(' ')[1].slice(0, 5),
+                endTime: (itemHour <= nextHour ? nextItem : item).data.split(' ')[1].slice(0, 5),
+                durationHours: Math.abs(diffHours).toFixed(1),
+                paired: true
+              });
+
+              pairedIds.add(item.id);
+              pairedIds.add(nextItem.id);
+              paired = true;
+              break;
             }
           }
 
@@ -211,6 +223,8 @@ export function useWeekData() {
               name: item.checkin,
               startHour: itemHour,
               endHour: itemHour + 0.3,
+              startDir: dir,
+              endDir: dir,
               startTime: item.data.split(' ')[1].slice(0, 5),
               paired: false
             });
