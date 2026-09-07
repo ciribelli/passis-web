@@ -176,7 +176,6 @@ export function useWeekData() {
 
             const nextName = nextItem.checkin.toLowerCase();
             const nextDir = nextItem.direction ? nextItem.direction.toLowerCase() : '';
-            const nextCategory = getCategory(nextName);
 
             // Regra: Apenas mesmo nome e direções opostas (ex: casa OUT -> casa IN, awake IN -> awake OUT)
             const isSameNamePair = (name === nextName) && (dir !== nextDir);
