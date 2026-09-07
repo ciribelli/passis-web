@@ -109,60 +109,81 @@ export default function WeekGrid({
                   <div className="day-track-container" style={{ position: 'relative', height: '300px', width: '100%' }}>
                     <div className="day-track" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '2px', height: '100%', backgroundColor: 'var(--border)' }} />
                     
-                    {dayArcs.map((arc) => {
-                      const y1 = hourToY(arc.startHour);
-                      const y2 = hourToY(arc.endHour);
+                    {/* Ordenar arcos para que a camada mais larga (sono) fique no fundo e as mais finas por cima */}
+                    {[...dayArcs]
+                      .sort((a, b) => {
+                        const order = { sleep: 1, commute: 2, routine: 3 };
+                        return (order[a.category] || 3) - (order[b.category] || 3);
+                      })
+                      .map((arc) => {
+                        const y1 = hourToY(arc.startHour);
+                        const y2 = hourToY(arc.endHour);
 
-                      return (
-                        <div key={arc.id}>
-                          {arc.paired && (
+                        // Estilos de espessura por categoria para visibilidade em camadas
+                        let lineWidth = '3px';
+                        let lineOpacity = 0.9;
+                        let lineZIndex = 3;
+
+                        if (arc.category === 'sleep') {
+                          lineWidth = '10px';
+                          lineOpacity = 0.35;
+                          lineZIndex = 1;
+                        } else if (arc.category === 'commute') {
+                          lineWidth = '6px';
+                          lineOpacity = 0.7;
+                          lineZIndex = 2;
+                        }
+
+                        return (
+                          <div key={arc.id}>
+                            {arc.paired && (
+                              <div 
+                                style={{ 
+                                  position: 'absolute', 
+                                  left: '50%', 
+                                  top: `${y1}px`, 
+                                  height: `${y2 - y1}px`, 
+                                  width: lineWidth, 
+                                  backgroundColor: arc.color, 
+                                  transform: 'translateX(-50%)',
+                                  opacity: lineOpacity,
+                                  borderRadius: '4px',
+                                  zIndex: lineZIndex
+                                }} 
+                              />
+                            )}
                             <div 
                               style={{ 
                                 position: 'absolute', 
                                 left: '50%', 
                                 top: `${y1}px`, 
-                                height: `${y2 - y1}px`, 
-                                width: '4px', 
-                                backgroundColor: arc.color, 
-                                transform: 'translateX(-50%)',
-                                opacity: 0.6,
-                                borderRadius: '2px',
-                                zIndex: 1
-                              }} 
-                            />
-                          )}
-                          <div 
-                            style={{ 
-                              position: 'absolute', 
-                              left: '50%', 
-                              top: `${y1}px`, 
-                              width: '10px', 
-                              height: '10px', 
-                              backgroundColor: arc.color, 
-                              borderRadius: '50%', 
-                              transform: 'translate(-50%, -50%)',
-                              zIndex: 2
-                            }} 
-                          />
-                          {arc.paired && (
-                            <div 
-                              style={{ 
-                                position: 'absolute', 
-                                left: '50%', 
-                                top: `${y2}px`, 
                                 width: '10px', 
                                 height: '10px', 
-                                backgroundColor: '#FFF', 
-                                border: `2px solid ${arc.color}`, 
+                                backgroundColor: arc.color, 
                                 borderRadius: '50%', 
                                 transform: 'translate(-50%, -50%)',
-                                zIndex: 2
+                                zIndex: 5
                               }} 
                             />
-                          )}
-                        </div>
-                      );
-                    })}
+                            {arc.paired && (
+                              <div 
+                                style={{ 
+                                  position: 'absolute', 
+                                  left: '50%', 
+                                  top: `${y2}px`, 
+                                  width: '10px', 
+                                  height: '10px', 
+                                  backgroundColor: '#FFF', 
+                                  border: `2px solid ${arc.color}`, 
+                                  borderRadius: '50%', 
+                                  transform: 'translate(-50%, -50%)',
+                                  zIndex: 5
+                                }} 
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               );
