@@ -74,9 +74,10 @@ export function useWeekData() {
       startSunday.setDate(startSunday.getDate() - 28);
 
       const startStr = formatDateKey(startSunday);
+      const endStr = formatDateKey(viewSaturday);
 
       const response = await axios.get(`${API_BASE_URL}/checkin`, {
-        params: { start_date: startStr, limit: 500 }
+        params: { start_date: startStr, end_date: endStr, limit: 1000 }
       });
 
       const checkins = response.data.checkins || [];
