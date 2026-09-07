@@ -148,9 +148,12 @@ export function useWeekData() {
         dayCheckins.sort((a, b) => new Date(a.data) - new Date(b.data));
 
         const dayArcs = [];
+        const pairedIds = new Set();
 
         for (let i = 0; i < dayCheckins.length; i++) {
           const item = dayCheckins[i];
+          if (pairedIds.has(item.id)) continue;
+
           const itemHour = parseDecimalHour(item.data);
           const name = item.checkin.toLowerCase();
           const dir = item.direction ? item.direction.toLowerCase() : '';
@@ -167,13 +170,16 @@ export function useWeekData() {
           }
 
           let paired = false;
-          if (dir === 'out' || dir === 'in') {
+          // Parear Entrada (IN) -> Saída (OUT)
+          if (dir === 'in') {
             for (let j = i + 1; j < dayCheckins.length; j++) {
               const nextItem = dayCheckins[j];
+              if (pairedIds.has(nextItem.id)) continue;
+
               const nextName = nextItem.checkin.toLowerCase();
               const nextDir = nextItem.direction ? nextItem.direction.toLowerCase() : '';
 
-              if (dir === 'out' && nextDir === 'in' && (nextName === name || category === 'commute')) {
+              if (nextDir === 'out' && (nextName === name || category === 'commute' || category === 'sleep' || category === 'routine')) {
                 const nextHour = parseDecimalHour(nextItem.data);
                 const diffHours = (new Date(nextItem.data) - new Date(item.data)) / (1000 * 60 * 60);
 
@@ -189,13 +195,15 @@ export function useWeekData() {
                   durationHours: diffHours.toFixed(1),
                   paired: true
                 });
+                pairedIds.add(item.id);
+                pairedIds.add(nextItem.id);
                 paired = true;
                 break;
               }
             }
           }
 
-          if (!paired) {
+          if (!paired && !pairedIds.has(item.id)) {
             dayArcs.push({
               id: `dot-${item.id}`,
               category,
@@ -206,6 +214,7 @@ export function useWeekData() {
               startTime: item.data.split(' ')[1].slice(0, 5),
               paired: false
             });
+            pairedIds.add(item.id);
           }
         }
 
