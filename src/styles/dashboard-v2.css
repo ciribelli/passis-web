@@ -248,6 +248,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding-right: 12px;
+  margin-top: 32px;
+  height: 300px;
   font-size: 0.7rem;
   font-family: var(--font-mono);
   color: var(--text-tertiary);

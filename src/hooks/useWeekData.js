@@ -178,13 +178,10 @@ export function useWeekData() {
             const nextDir = nextItem.direction ? nextItem.direction.toLowerCase() : '';
             const nextCategory = getCategory(nextName);
 
-            // Regra 1: Mesmo nome e direções opostas (ex: awake IN -> awake OUT, terco IN -> terco OUT)
+            // Regra: Apenas mesmo nome e direções opostas (ex: casa OUT -> casa IN, awake IN -> awake OUT)
             const isSameNamePair = (name === nextName) && (dir !== nextDir);
 
-            // Regra 2: Categoria de deslocamento (ex: casa OUT -> EDISEN IN ou casa IN)
-            const isCommutePair = (category === 'commute' && nextCategory === 'commute') && (dir !== nextDir);
-
-            if (isSameNamePair || isCommutePair) {
+            if (isSameNamePair) {
               const nextHour = parseDecimalHour(nextItem.data);
               const diffHours = (new Date(nextItem.data) - new Date(item.data)) / (1000 * 60 * 60);
 
@@ -236,7 +233,7 @@ export function useWeekData() {
       });
       setArcsByDay(arcs);
 
-      // 4. Calcular Metas Relativas
+      // 4. Calcular Metas Relativas e Cards Dinâmicos por Semana
       const currentWeekKeys = new Set(days.map(d => d.dateKey));
 
       let currentAcademia = 0;
@@ -281,6 +278,52 @@ export function useWeekData() {
 
       setContextSentence(sentence);
 
+      // Calcular Sono e Deslocamento dinamicamente por semana
+      let currentSleepTotalHours = 0;
+      let daysWithSleepData = 0;
+
+      let currentCommuteTotalHours = 0;
+      let daysWithCommuteData = 0;
+
+      days.forEach(d => {
+        const list = checkinsByDate[d.dateKey] || [];
+        const dayArcsList = arcs[d.dayIndex] || [];
+
+        const awakeArc = dayArcsList.find(a => a.category === 'sleep' && a.paired);
+        if (awakeArc) {
+          const awakeHours = parseFloat(awakeArc.durationHours);
+          const sleepHours = Math.max(4, Math.min(12, 24 - awakeHours));
+          currentSleepTotalHours += sleepHours;
+          daysWithSleepData++;
+        } else {
+          const hasAwake = list.some(c => c.checkin.toLowerCase().includes('awake'));
+          if (hasAwake) {
+            currentSleepTotalHours += 7.5;
+            daysWithSleepData++;
+          }
+        }
+
+        const commuteArcs = dayArcsList.filter(a => a.category === 'commute' && a.paired);
+        if (commuteArcs.length > 0) {
+          let dayCommute = 0;
+          commuteArcs.forEach(a => {
+            dayCommute += parseFloat(a.durationHours);
+          });
+          currentCommuteTotalHours += dayCommute;
+          daysWithCommuteData++;
+        } else {
+          const hasCasa = list.some(c => c.checkin.toLowerCase().includes('casa'));
+          if (hasCasa) {
+            currentCommuteTotalHours += 0.8;
+            daysWithCommuteData++;
+          }
+        }
+      });
+
+      const avgCurrentSleep = daysWithSleepData > 0 ? (currentSleepTotalHours / daysWithSleepData).toFixed(1) : '7.0';
+      const avgCurrentCommuteHours = daysWithCommuteData > 0 ? (currentCommuteTotalHours / daysWithCommuteData) : 0.8;
+      const avgCurrentCommuteMins = Math.round(avgCurrentCommuteHours * 60);
+
       setHabits({
         academia: {
           title: 'Academia',
@@ -302,19 +345,21 @@ export function useWeekData() {
         },
         sono: {
           title: 'Sono Médio',
-          current: '7.2h',
+          current: `${avgCurrentSleep}h`,
           target: '7.0h',
           unit: '',
-          trend: '→ estável',
-          status: 'above'
+          dots: days.map(d => (checkinsByDate[d.dateKey] || []).some(c => c.checkin.toLowerCase().includes('awake'))),
+          trend: parseFloat(avgCurrentSleep) >= 7.0 ? '→ saudável' : '↓ abaixo',
+          status: parseFloat(avgCurrentSleep) >= 7.0 ? 'above' : 'below'
         },
         transito: {
           title: 'Deslocamento',
-          current: '45m',
+          current: `${avgCurrentCommuteMins}m`,
           target: '50m',
           unit: '',
-          trend: '↓ menor',
-          status: 'above'
+          dots: days.map(d => (checkinsByDate[d.dateKey] || []).some(c => c.checkin.toLowerCase().includes('casa') || c.checkin.toLowerCase().includes('edisen'))),
+          trend: avgCurrentCommuteMins <= 50 ? '↓ menor' : '↑ maior',
+          status: avgCurrentCommuteMins <= 50 ? 'above' : 'below'
         }
       });
 
