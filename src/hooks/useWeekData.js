@@ -277,7 +277,9 @@ export function useWeekData() {
 
       setContextSentence(sentence);
 
-      // Tempo fora de casa em horas (diferença entre casa OUT e casa IN no mesmo dia)
+      // Tempo fora de casa em horas e Sono Médio
+      let currentSleepTotalHours = 0;
+      let daysWithSleepData = 0;
       let currentOutHoursTotal = 0;
       let daysWithOutData = 0;
 
