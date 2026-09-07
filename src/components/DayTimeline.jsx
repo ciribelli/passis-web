@@ -7,6 +7,8 @@ export default function DayTimeline({ selectedDay, checkins }) {
         day: 'numeric',
         month: 'long'
       })
+    : '';
+
   // Ordenar eventos em ordem decrescente (mais recente no topo)
   const sortedCheckins = [...(checkins || [])].sort(
     (a, b) => new Date(b.data) - new Date(a.data)
