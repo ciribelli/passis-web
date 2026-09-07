@@ -79,13 +79,25 @@ export default function WeekGrid({
       <div className="week-grid-body">
         {/* Eixo Y de Horários */}
         <div className="time-axis">
-          <span>00:00</span>
-          <span>04:00</span>
-          <span>08:00</span>
-          <span>12:00</span>
-          <span>16:00</span>
-          <span>20:00</span>
-          <span>24:00</span>
+          <div className="day-column-header" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
+            <div className="day-initial">S</div>
+            <div className="day-sub">Dom 0</div>
+          </div>
+          <div className="time-axis-ticks">
+            {[0, 4, 8, 12, 16, 20, 24].map((h) => (
+              <span
+                key={h}
+                style={{
+                  position: 'absolute',
+                  top: `${hourToY(h)}px`,
+                  transform: 'translateY(-50%)',
+                  right: '12px'
+                }}
+              >
+                {h.toString().padStart(2, '0')}:00
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Container das Colunas */}

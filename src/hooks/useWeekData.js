@@ -277,12 +277,9 @@ export function useWeekData() {
 
       setContextSentence(sentence);
 
-      // Calcular Sono e Deslocamento dinamicamente por semana
-      let currentSleepTotalHours = 0;
-      let daysWithSleepData = 0;
-
-      let currentCommuteTotalHours = 0;
-      let daysWithCommuteData = 0;
+      // Tempo fora de casa em horas (diferença entre casa OUT e casa IN no mesmo dia)
+      let currentOutHoursTotal = 0;
+      let daysWithOutData = 0;
 
       days.forEach(d => {
         const list = checkinsByDate[d.dateKey] || [];
@@ -302,26 +299,33 @@ export function useWeekData() {
           }
         }
 
-        const commuteArcs = dayArcsList.filter(a => a.category === 'commute' && a.paired);
-        if (commuteArcs.length > 0) {
-          let dayCommute = 0;
-          commuteArcs.forEach(a => {
-            dayCommute += parseFloat(a.durationHours);
-          });
-          currentCommuteTotalHours += dayCommute;
-          daysWithCommuteData++;
+        const casaOut = list.find(c => c.checkin.toLowerCase().includes('casa') && c.direction === 'out');
+        const casaIn = list.find(c => c.checkin.toLowerCase().includes('casa') && c.direction === 'in');
+
+        if (casaOut && casaIn) {
+          const outH = parseDecimalHour(casaOut.data);
+          const inH = parseDecimalHour(casaIn.data);
+          if (inH > outH) {
+            currentOutHoursTotal += (inH - outH);
+            daysWithOutData++;
+          }
+        } else if (casaOut) {
+          const outH = parseDecimalHour(casaOut.data);
+          currentOutHoursTotal += Math.max(0, 19.5 - outH);
+          daysWithOutData++;
         } else {
-          const hasCasa = list.some(c => c.checkin.toLowerCase().includes('casa'));
-          if (hasCasa) {
-            currentCommuteTotalHours += 0.8;
-            daysWithCommuteData++;
+          const commuteArcs = dayArcsList.filter(a => a.category === 'commute' && a.paired);
+          if (commuteArcs.length > 0) {
+            commuteArcs.forEach(a => {
+              currentOutHoursTotal += parseFloat(a.durationHours);
+            });
+            daysWithOutData++;
           }
         }
       });
 
       const avgCurrentSleep = daysWithSleepData > 0 ? (currentSleepTotalHours / daysWithSleepData).toFixed(1) : '7.0';
-      const avgCurrentCommuteHours = daysWithCommuteData > 0 ? (currentCommuteTotalHours / daysWithCommuteData) : 0.8;
-      const avgCurrentCommuteMins = Math.round(avgCurrentCommuteHours * 60);
+      const avgHoursOut = daysWithOutData > 0 ? (currentOutHoursTotal / daysWithOutData) : 9.5;
 
       setHabits({
         academia: {
@@ -352,13 +356,13 @@ export function useWeekData() {
           status: parseFloat(avgCurrentSleep) >= 7.0 ? 'above' : 'below'
         },
         transito: {
-          title: 'Deslocamento',
-          current: `${avgCurrentCommuteMins}m`,
-          target: '50m',
+          title: 'Tempo Fora de Casa',
+          current: `${avgHoursOut.toFixed(1)}h`,
+          target: '10.0h',
           unit: '',
           dots: days.map(d => (checkinsByDate[d.dateKey] || []).some(c => c.checkin.toLowerCase().includes('casa') || c.checkin.toLowerCase().includes('edisen'))),
-          trend: avgCurrentCommuteMins <= 50 ? '↓ menor' : '↑ maior',
-          status: avgCurrentCommuteMins <= 50 ? 'above' : 'below'
+          trend: avgHoursOut <= 10.0 ? '↓ equilibrado' : '↑ alto',
+          status: avgHoursOut <= 10.0 ? 'above' : 'below'
         }
       });
 
