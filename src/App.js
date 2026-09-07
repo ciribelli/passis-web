@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
+import PredicoesPage from './pages/PredicoesPage';
 import Memorias from './pages/Memorias';
 import Documentos from './pages/Documentos';
 import Checkins from './pages/Checkins';
@@ -51,6 +52,7 @@ function App() {
             {isAdmin ? (
               <>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/predicoes" element={<PredicoesPage />} />
                 <Route path="/memorias" element={<Memorias />} />
                 <Route path="/documentos" element={<Documentos />} />
                 <Route path="/checkins" element={<Checkins />} />

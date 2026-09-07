@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, BarChart3, Brain, FileText, CheckCircle, PiggyBank, LogOut } from 'lucide-react';
+import { Menu, X, BarChart3, Sparkles, Brain, FileText, CheckCircle, PiggyBank, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/sidebar.css';
 
@@ -9,6 +9,7 @@ export default function Sidebar({ session, onLogout }) {
 
   const menuItems = [
     { path: '/', label: 'Dashboard', icon: BarChart3, adminOnly: true },
+    { path: '/predicoes', label: 'Predições', icon: Sparkles, adminOnly: true },
     { path: '/banco-dos-filhos', label: 'Cofre dos Filhos', icon: PiggyBank, adminOnly: false },
     { path: '/memorias', label: 'Memórias', icon: Brain, adminOnly: true },
     { path: '/documentos', label: 'Documentos', icon: FileText, adminOnly: true },

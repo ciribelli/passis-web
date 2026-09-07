@@ -4,8 +4,9 @@
   top: 0;
   height: 100vh;
   width: 250px;
-  background-color: #0f172a; /* Slate 900 - Premium Dark Slate background */
-  color: #e2e8f0;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  color: var(--text-primary);
   padding-top: 60px;
   padding-bottom: 120px;
   overflow-y: auto;
@@ -22,79 +23,83 @@
 }
 
 .sidebar-header {
-  padding: 20px;
-  border-bottom: 2px solid #1e293b; /* Slate 800 */
-  margin-bottom: 20px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 15px;
 }
 
 .sidebar-header h2 {
   margin: 0;
-  font-size: 1.3rem;
-  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
 }
 
 .sidebar-menu {
   list-style: none;
-  padding: 0;
+  padding: 0 10px;
   margin: 0;
 }
 
 .sidebar-menu li {
-  margin: 0;
+  margin-bottom: 3px;
 }
 
 .menu-link {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px 20px;
-  color: #94a3b8; /* Slate 400 text color */
+  gap: 12px;
+  padding: 10px 14px;
+  color: var(--text-secondary);
   text-decoration: none;
-  transition: all 0.3s ease;
-  border-left: 3px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
 }
 
 .menu-link:hover {
-  background-color: #1e293b; /* Slate 800 background on hover */
-  color: #f1f5f9;
-  border-left-color: var(--color-brand-500);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .menu-link.active {
-  background-color: var(--color-brand-600); /* Brand Indigo background */
-  color: #fff;
-  border-left-color: var(--color-brand-300);
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .sidebar-toggle {
   position: fixed;
   top: 15px;
   left: 15px;
-  background-color: var(--color-brand-600);
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
+  background-color: var(--text-primary);
+  border: 1px solid var(--border);
+  color: var(--text-inverse);
+  padding: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   z-index: 99;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
+  transition: opacity 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-toggle:hover {
-  background-color: var(--color-brand-500);
+  opacity: 0.9;
 }
 
 /* Layout responsivo */
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px;
+    width: 220px;
   }
 
   .menu-link {
-    padding: 12px 15px;
+    padding: 10px 12px;
     gap: 10px;
   }
 }
@@ -116,51 +121,52 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  border-top: 2px solid #1e293b;
-  background-color: #0f172a;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-surface);
 }
 
 .sidebar-user-info {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .user-greeting {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-tertiary);
 }
 
 .user-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .logout-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 10px 14px;
-  background-color: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  color: #94a3b8;
+  padding: 8px 12px;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
   cursor: pointer;
   font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
 }
 
 .logout-btn:hover {
-  background-color: #e24b4a;
-  border-color: #e24b4a;
-  color: #ffffff;
+  background-color: var(--neg-light);
+  border-color: var(--neg);
+  color: var(--neg);
 }
 
 .sidebar.closed .sidebar-footer {
   display: none;
 }
+
 
