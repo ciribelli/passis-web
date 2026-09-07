@@ -10,9 +10,9 @@ export default function DayTimeline({ selectedDay, checkins }) {
     : '';
 
   // Ordenar eventos em ordem decrescente (mais recente no topo)
-  const sortedCheckins = [...(checkins || [])].sort(
-    (a, b) => new Date(b.data) - new Date(a.data)
-  );
+  const sortedCheckins = [...(checkins || [])].sort((a, b) => {
+    return (b.data || '').localeCompare(a.data || '');
+  });
 
   return (
     <div className="day-timeline-card">

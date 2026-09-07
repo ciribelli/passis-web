@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  * Converte hora decimal (ex: 8.5) para Y pixels na altura de 300px (escala de 06:00 a 24:00)
  */
 function hourToY(hour) {
-  const minHour = 6;
+  const minHour = 0;
   const maxHour = 24;
   const clamped = Math.max(minHour, Math.min(maxHour, hour));
   return ((clamped - minHour) / (maxHour - minHour)) * 300;
@@ -56,7 +56,7 @@ export default function WeekGrid({
           </div>
 
           <p className="week-grid-subtitle">
-            Visualização vertical por horário (06:00 às 24:00) • Domingo a Sábado
+            Visualização vertical por horário (00:00 às 24:00) • Domingo a Sábado
           </p>
         </div>
 
@@ -79,84 +79,21 @@ export default function WeekGrid({
       <div className="week-grid-body">
         {/* Eixo Y de Horários */}
         <div className="time-axis">
-          <span>06:00</span>
-          <span>09:00</span>
+          <span>00:00</span>
+          <span>04:00</span>
+          <span>08:00</span>
           <span>12:00</span>
-          <span>15:00</span>
-          <span>18:00</span>
-          <span>21:00</span>
+          <span>16:00</span>
+          <span>20:00</span>
           <span>24:00</span>
         </div>
 
-        {/* Container das Colunas e SVG Layer */}
+        {/* Container das Colunas */}
         <div style={{ flex: 1, position: 'relative' }}>
-          {/* SVG Overlay dos Arcos do Esboço */}
-          <svg
-            className="arcs-svg-layer"
-            viewBox="0 0 700 300"
-            preserveAspectRatio="none"
-          >
-            {weekDays.map((dayObj, i) => {
-              const dayArcs = (arcsByDay && arcsByDay[i]) || [];
-              const x = i * 100 + 50; // Centro da coluna i (0..600)
-
-              return (
-                <g key={dayObj.dateKey}>
-                  {dayArcs.map((arc) => {
-                    const y1 = hourToY(arc.startHour);
-                    const y2 = hourToY(arc.endHour);
-
-                    if (arc.paired) {
-                      const curveOffset = Math.min(25, 10 + (y2 - y1) * 0.15);
-                      const pathD = `M ${x} ${y1} C ${x + curveOffset} ${y1 + (y2 - y1) * 0.25}, ${x + curveOffset} ${y1 + (y2 - y1) * 0.75}, ${x} ${y2}`;
-
-                      return (
-                        <g key={arc.id}>
-                          <path
-                            d={pathD}
-                            fill="none"
-                            stroke={arc.color}
-                            strokeWidth="3.5"
-                            strokeLinecap="round"
-                            opacity="0.85"
-                          />
-                          <circle
-                            cx={x}
-                            cy={y1}
-                            r="5"
-                            fill={arc.color}
-                          />
-                          <circle
-                            cx={x}
-                            cy={y2}
-                            r="4.5"
-                            fill="#FFFFFF"
-                            stroke={arc.color}
-                            strokeWidth="2.5"
-                          />
-                        </g>
-                      );
-                    }
-
-                    return (
-                      <circle
-                        key={arc.id}
-                        cx={x}
-                        cy={y1}
-                        r="5"
-                        fill={arc.color}
-                      />
-                    );
-                  })}
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Grid de Colunas HTML */}
           <div className="columns-container">
-            {weekDays.map((dayObj) => {
+            {weekDays.map((dayObj, i) => {
               const isSelected = selectedDay === dayObj.dateKey;
+              const dayArcs = (arcsByDay && arcsByDay[i]) || [];
 
               return (
                 <div
@@ -169,7 +106,64 @@ export default function WeekGrid({
                     <div className="day-sub">{dayObj.short} {dayObj.dayNumber}</div>
                   </div>
 
-                  <div className="day-track" />
+                  <div className="day-track-container" style={{ position: 'relative', height: '300px', width: '100%' }}>
+                    <div className="day-track" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: '2px', height: '100%', backgroundColor: 'var(--border)' }} />
+                    
+                    {dayArcs.map((arc) => {
+                      const y1 = hourToY(arc.startHour);
+                      const y2 = hourToY(arc.endHour);
+
+                      return (
+                        <div key={arc.id}>
+                          {arc.paired && (
+                            <div 
+                              style={{ 
+                                position: 'absolute', 
+                                left: '50%', 
+                                top: `${y1}px`, 
+                                height: `${y2 - y1}px`, 
+                                width: '4px', 
+                                backgroundColor: arc.color, 
+                                transform: 'translateX(-50%)',
+                                opacity: 0.6,
+                                borderRadius: '2px',
+                                zIndex: 1
+                              }} 
+                            />
+                          )}
+                          <div 
+                            style={{ 
+                              position: 'absolute', 
+                              left: '50%', 
+                              top: `${y1}px`, 
+                              width: '10px', 
+                              height: '10px', 
+                              backgroundColor: arc.color, 
+                              borderRadius: '50%', 
+                              transform: 'translate(-50%, -50%)',
+                              zIndex: 2
+                            }} 
+                          />
+                          {arc.paired && (
+                            <div 
+                              style={{ 
+                                position: 'absolute', 
+                                left: '50%', 
+                                top: `${y2}px`, 
+                                width: '10px', 
+                                height: '10px', 
+                                backgroundColor: '#FFF', 
+                                border: `2px solid ${arc.color}`, 
+                                borderRadius: '50%', 
+                                transform: 'translate(-50%, -50%)',
+                                zIndex: 2
+                              }} 
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })}
